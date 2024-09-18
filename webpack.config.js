@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { GenerateSW } = require('workbox-webpack-plugin');
 const { WebpackPwaManifest } = require('webpack-pwa-manifest');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const path = require('path');
@@ -24,6 +25,35 @@ module.exports = {
       template: './client/index.html',
       title: 'Text Editor',
     }),
+
+    // Workbox plugin to generate the service worker
+    new GenerateSW({
+        clientsClaim: true,
+        skipWaiting: true,
+        runtimeCaching: [
+          {
+            // Match any request ends with .png, .jpg, .jpeg, .svg, .gif
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: {
+                maxEntries: 50,
+              },
+            },
+          },
+          {
+            // Cache CSS, JS, and HTML files
+            urlPattern: /\.(?:js|css|html)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+            },
+          },
+        ],
+      }),
+    ],
+  };
     new WebpackPwaManifest({
       name: 'Text Editor',
       short_name: 'Editor',
@@ -41,6 +71,4 @@ module.exports = {
     new WorkboxWebpackPlugin.GenerateSW({
       clientsClaim: true,
       skipWaiting: true,
-    }),
-  ],
-};
+    })
