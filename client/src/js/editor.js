@@ -14,7 +14,7 @@ const initEditor = async () => {
   const editor = CodeMirror(document.getElementById('editor'), {
     value: content || '',
     mode: 'javascript',
-    theme: 'default',
+    theme: 'monokai',
     lineNumbers: true,
   });
 
