@@ -4,6 +4,14 @@ const { WebpackPwaManifest } = require('webpack-pwa-manifest');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const path = require('path');
 
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+        console.log('Service Worker registered with scope:', registration.scope);
+      });
+    });
+  }  
+
 module.exports = {
   entry: './client/src/js/index.js',
   output: {
@@ -61,10 +69,12 @@ module.exports = {
       background_color: '#ffffff',
       theme_color: '#2196f3',
       start_url: '.',
+      publicPath: '/',
       icons: [
         {
           src: path.resolve('client/src/images/icon.png'),
           sizes: [96, 128, 192, 256, 384, 512],
+          destination: path.join('assets', 'icons'),
         },
       ],
     }),
