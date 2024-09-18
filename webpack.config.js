@@ -1,16 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { GenerateSW } = require('workbox-webpack-plugin');
 const { WebpackPwaManifest } = require('webpack-pwa-manifest');
-const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const path = require('path');
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js').then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      });
-    });
-  }  
 
 module.exports = {
   entry: './client/src/js/index.js',
@@ -20,48 +11,49 @@ module.exports = {
   },
   module: {
     rules: [
-{
-    test: /\.js$/,
-    exclude: /node_modules/,
-    use: 'babel-loader',
-},
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: 'babel-loader',
+      },
       // Loaders for JavaScript and CSS
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './client/index.html',
+      template: './client/src/index.html',
       title: 'Text Editor',
     }),
 
     // Workbox plugin to generate the service worker
     new GenerateSW({
-        clientsClaim: true,
-        skipWaiting: true,
-        runtimeCaching: [
-          {
-            // Match any request ends with .png, .jpg, .jpeg, .svg, .gif
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'images',
-              expiration: {
-                maxEntries: 50,
-              },
+      clientsClaim: true,
+      skipWaiting: true,
+      runtimeCaching: [
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'images',
+            expiration: {
+              maxEntries: 50,
             },
           },
-          {
-            // Cache CSS, JS, and HTML files
-            urlPattern: /\.(?:js|css|html)$/,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'static-resources',
-            },
+        },
+        {
+          urlPattern: /\.(?:js|css|html)$/,
+          handler: 'StaleWhileRevalidate',
+          options: {
+            cacheName: 'static-resources',
           },
-        ],
-      }),
-    ],
-  };
+        },
+      ],
+    }),
+
     new WebpackPwaManifest({
       name: 'Text Editor',
       short_name: 'Editor',
@@ -78,7 +70,5 @@ module.exports = {
         },
       ],
     }),
-    new WorkboxWebpackPlugin.GenerateSW({
-      clientsClaim: true,
-      skipWaiting: true,
-    })
+  ],
+};
