@@ -1,6 +1,7 @@
 // Import CodeMirror and necessary modes
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/javascript/javascript';
+import 'codemirror/theme/monokai.css';
 
 // Import IndexedDB methods
 import { getDb, putDb } from './database';
